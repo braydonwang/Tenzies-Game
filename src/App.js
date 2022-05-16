@@ -9,6 +9,10 @@ import Confetti from "react-confetti";
 export default function App() {
   const [dice, setDice] = useState(allNewDice);
   const [tenzies, setTenzies] = useState(false);
+  const [rolls, setRolls] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [millis, setMillis] = useState(0);
+  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     var check = true;
@@ -20,8 +24,38 @@ export default function App() {
     }
     if (check) {
       setTenzies(true);
+      setIsActive(false);
+      if (
+        localStorage.getItem("bestTime") === null ||
+        seconds * 100 + millis < localStorage.getItem("bestTime")
+      ) {
+        localStorage.setItem("bestTime", seconds * 100 + millis);
+      }
     }
   }, [dice]);
+
+  useEffect(() => {
+    let intervalSeconds = null;
+    let intervalMillis = null;
+    if (isActive) {
+      if (millis > 50) {
+        setMillis(0);
+      }
+      intervalSeconds = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds + 1);
+      }, 1000);
+      intervalMillis = setInterval(() => {
+        setMillis((prevMillis) => prevMillis + 1);
+      }, 10);
+    } else if (!isActive && (seconds !== 0 || millis !== 0)) {
+      clearInterval(intervalSeconds);
+      clearInterval(intervalMillis);
+    }
+    return () => {
+      clearInterval(intervalSeconds);
+      clearInterval(intervalMillis);
+    };
+  }, [isActive, seconds]);
 
   function allNewDice() {
     var randArray = [];
@@ -39,6 +73,10 @@ export default function App() {
     if (tenzies) {
       setDice(allNewDice());
       setTenzies(false);
+      setIsActive(true);
+      setSeconds(0);
+      setMillis(0);
+      setRolls(0);
     } else {
       setDice((prevDice) => {
         return prevDice.map((die) => {
@@ -50,6 +88,7 @@ export default function App() {
             : die;
         });
       });
+      setRolls((prevRolls) => prevRolls + 1);
     }
   }
 
@@ -80,6 +119,19 @@ export default function App() {
 
   return (
     <main>
+      <h2 className="die-rolls">Number of Rolls: {rolls}</h2>
+      <h2 className="die-time">
+        {seconds}:{millis}
+      </h2>
+      <h2 className="die-rolls">
+        Best Time:{" "}
+        {localStorage.getItem("bestTime")
+          ? Math.floor(localStorage.getItem("bestTime") / 100) +
+            " seconds, " +
+            (localStorage.getItem("bestTime") % 100) +
+            " milliseconds"
+          : "N/A"}
+      </h2>
       {tenzies && <Confetti />}
       <h1 className="title">Tenzies</h1>
       <p className="instructions">

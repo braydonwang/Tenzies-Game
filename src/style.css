@@ -43,8 +43,12 @@ main {
 }
 
 .die {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-areas:
+    "a . c"
+    "e g f"
+    "d . b";
+  justify-content: space-between;
   align-items: center;
   height: 100px;
   width: 100px;
@@ -54,10 +58,54 @@ main {
   transition: 0.3s;
 }
 
+.pip {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin: 4px;
+
+  background-color: #333;
+  box-shadow: inset 0 3px #111, inset 0 -3px #555;
+}
+
+.pip:nth-child(2) {
+  grid-area: b;
+}
+.pip:nth-child(3) {
+  grid-area: c;
+}
+.pip:nth-child(4) {
+  grid-area: d;
+}
+.pip:nth-child(5) {
+  grid-area: e;
+}
+.pip:nth-child(6) {
+  grid-area: f;
+}
+.pip:nth-child(odd):last-child {
+  grid-area: g;
+}
+
 .die > h2 {
   font-family: Karla, sans-serif;
   font-size: 37px;
   font-weight: 800;
+}
+
+.die-rolls {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 25px;
+  font-style: oblique;
+}
+
+.die-time {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: 25px;
+  font-style: oblique;
 }
 
 .die-button {
